@@ -27,7 +27,7 @@ public class CampaignService extends DialogflowApp {
 
     @ForIntent("user_operations")
     public ActionResponse make_name(ActionRequest request) {
-        LOGGER.info("operation_options");
+        LOGGER.info("user_operations");
 
         String task = request.getParameter("task").toString(); //add, fetch, get, publish, unpublish, delete
         String campStatus = request.getParameter("camp_status").toString(); //active, inactive, scheduled,
@@ -37,6 +37,7 @@ public class CampaignService extends DialogflowApp {
         try {
             response = executeAction(task, campStatus);
         } catch (CampaignException ce) {
+            ce.printStackTrace();
             response = "Exception aai re";
         }
 
@@ -66,9 +67,9 @@ public class CampaignService extends DialogflowApp {
         if (getTasks.contains(task)) { //list campaigns
             String campaigns = getCampaignsByStatus(campStatus).toString();
             String response = "Hi these are your " + campStatus + "campaigns" + campaigns;
-            response.concat("\n What do you want to do next, you can");
+            response = response.concat("\n What do you want to do next, you can");
             if (campStatus.equalsIgnoreCase("active")) {
-                response.concat("either publish or deactivate the campaign");
+                response = response.concat("either publish or deactivate the campaign");
             }
             return response;
         } else if ("publish".equalsIgnoreCase(task)) {
