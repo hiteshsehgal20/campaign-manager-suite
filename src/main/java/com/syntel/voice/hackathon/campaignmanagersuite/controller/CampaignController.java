@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutionException;
 class CampaignController {
     private static final Logger LOG = LoggerFactory.getLogger(CampaignService.class);
     public static final App actionsApp = new CampaignService();
+    
     @GetMapping("/")
     String serveAck() {
         return "App is listening but requires valid POST request to respond with Action response.";
