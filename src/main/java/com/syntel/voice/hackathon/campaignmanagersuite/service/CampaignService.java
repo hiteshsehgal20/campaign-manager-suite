@@ -29,7 +29,6 @@ public class CampaignService extends DialogflowApp {
     public ActionResponse make_name(ActionRequest request) {
         LOGGER.info("get_active_inactive_campaigns");
 
-        String task = request.getParameter("task").toString(); //add, fetch, get, publish, unpublish, delete
         String campStatus = request.getParameter("camp_status").toString(); //active, inactive, scheduled,
 
         String response;
@@ -39,11 +38,10 @@ public class CampaignService extends DialogflowApp {
                 campStatus = "active";
             }
 
-            if (StringUtils.isEmpty(task)) {
-                task = "list";
+            if(campaigns.isEmpty()) {
+                response = "You do not have any campaigns at the moment. You may create one.";
             }
-
-            if (activeStatus.contains(campStatus)) { //list campaigns
+            else if (activeStatus.contains(campStatus)) { //list campaigns
                 String campaigns = getCampaignsByStatus("active").toString();
                 response = "Hi these are your " + campStatus + " campaigns " + campaigns;
                 response = response.concat("\n What do you want to do next, you can ");
@@ -54,9 +52,6 @@ public class CampaignService extends DialogflowApp {
                 response = "Hi these are your " + campStatus + " campaigns " + campaigns;
                 response = response.concat("\n What do you want to do next, you can ");
                 response = response.concat("activate the campaign");
-            }
-            else if ("dev".equalsIgnoreCase(task)) {
-                response =  clearCampaigns() + addTestCampaigns();
             } else {
                 throw new CampaignException();
             }
@@ -69,6 +64,19 @@ public class CampaignService extends DialogflowApp {
         ActionResponse actionResponse = responseBuilder.build();
         LOGGER.info(actionResponse.toString());
         LOGGER.info("get_active_inactive_campaigns end.");
+        return actionResponse;
+    }
+
+    @ForIntent("dev_setup")
+    public ActionResponse dev_setup(ActionRequest request) {
+        LOGGER.info("dev_setup");
+
+        String response =  clearCampaigns() + addTestCampaigns();
+
+        ResponseBuilder responseBuilder = getResponseBuilder(request).add(response);
+        ActionResponse actionResponse = responseBuilder.build();
+        LOGGER.info(actionResponse.toString());
+        LOGGER.info("dev_setup end.");
         return actionResponse;
     }
 
