@@ -19,7 +19,7 @@ public class CampaignService extends DialogflowApp {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CampaignService.class);
 
-    List<Campaign> campaigns = new ArrayList<>();
+    static final List<Campaign> campaigns = new ArrayList<>();
     List<String> activeStatus = Arrays.asList("active", "live", "published");
     List<String> inActiveStatus = Arrays.asList("inactive", "unpublished");
     List<String> publishTasks = Arrays.asList("publish", "schedule", "activate");
@@ -97,11 +97,14 @@ public class CampaignService extends DialogflowApp {
         String response;
 
         try {
+            Campaign campaign = campaigns.get(campaignId);
             if(publishTasks.contains(task)) {
-                campaigns.get(campaignId).setStatus("active");
+                campaign.setStatus("active");
+                campaigns.set(campaignId, campaign);
                 response = "Campaign with ID " + campaignId + " has been published";
             } else if(unpublishTasks.contains(task)) {
-                campaigns.get(campaignId).setStatus("inactive");
+                campaign.setStatus("inactive");
+                campaigns.set(campaignId, campaign);
                 response = "Campaign with ID " + campaignId + " has been unpublished";
             } else {
                 throw new CampaignException();
@@ -156,7 +159,7 @@ public class CampaignService extends DialogflowApp {
     }
 
     private String clearCampaigns() {
-        campaigns = new ArrayList<>();
+        campaigns.clear();
         return "Campaigns cleared.";
     }
 
