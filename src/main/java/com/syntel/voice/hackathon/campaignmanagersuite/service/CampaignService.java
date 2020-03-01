@@ -22,7 +22,7 @@ public class CampaignService extends DialogflowApp {
     List<Campaign> campaigns = new ArrayList<>();
     List<String> activeStatus = Arrays.asList("active", "live", "published");
     List<String> inActiveStatus = Arrays.asList("inactive", "unpublished");
-    List<String> publishTasks = Arrays.asList("publish", "schedule");
+    List<String> publishTasks = Arrays.asList("publish", "schedule", "activate");
     List<String> unpublishTasks = Arrays.asList("unpublish", "deactivate", "delete", "remove");
 
     @ForIntent("get_active_inactive_campaigns")
@@ -89,6 +89,7 @@ public class CampaignService extends DialogflowApp {
         Map parameters = context.getParameters();
 
         String task = parameters.get("campaign_task").toString();
+        LOGGER.info("Campaign task is", task);
 
         int campaignId = (int) request.getParameter("campaign_id");
 
@@ -126,7 +127,7 @@ public class CampaignService extends DialogflowApp {
         int ID = campaigns.size()+1;
         campaigns.add(new Campaign(ID, title, description, "inactive"));
 
-        String response = "Your campaign has been created with ID " + ID;
+        String response = "Your campaign has been created with ID " + ID + "You may list it in inactive campaigns.";
 
         ResponseBuilder responseBuilder = getResponseBuilder(request).add(response);
         ActionResponse actionResponse = responseBuilder.build();
