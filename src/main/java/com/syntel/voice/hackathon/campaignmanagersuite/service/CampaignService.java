@@ -9,17 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class CampaignService extends DialogflowApp {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CampaignService.class);
 
-    static final List<Campaign> campaigns = new ArrayList<>();
+    static final Map<Integer, Campaign> campaigns = new HashMap<>();
     List<String> activeStatus = Arrays.asList("active", "live", "published");
     List<String> inActiveStatus = Arrays.asList("inactive", "unpublished");
     List<String> publishTasks = Arrays.asList("publish", "schedule", "activate");
@@ -100,11 +97,11 @@ public class CampaignService extends DialogflowApp {
             Campaign campaign = campaigns.get(campaignId);
             if(publishTasks.contains(task)) {
                 campaign.setStatus("active");
-                campaigns.set(campaignId, campaign);
+                campaigns.put(campaignId, campaign);
                 response = "Campaign with ID " + campaignId + " has been published";
             } else if(unpublishTasks.contains(task)) {
                 campaign.setStatus("inactive");
-                campaigns.set(campaignId, campaign);
+                campaigns.put(campaignId, campaign);
                 response = "Campaign with ID " + campaignId + " has been unpublished";
             } else {
                 throw new CampaignException();
@@ -129,9 +126,9 @@ public class CampaignService extends DialogflowApp {
         String description = request.getParameter("description").toString();
 
         int ID = campaigns.size()+1;
-        campaigns.add(new Campaign(ID, title, description, "inactive"));
+        campaigns.put(ID, new Campaign(ID, title, description, "inactive"));
 
-        String response = "Your campaign has been created with ID " + ID + "You may list it in inactive campaigns.";
+        String response = "Your campaign has been created with ID " + ID + " You may list it in inactive campaigns.";
 
         ResponseBuilder responseBuilder = getResponseBuilder(request).add(response);
         ActionResponse actionResponse = responseBuilder.build();
@@ -142,19 +139,13 @@ public class CampaignService extends DialogflowApp {
 
     private List<String> getCampaignsByStatus(String status) {
         List<String> camps = new ArrayList<>();
-        for (Campaign camp : campaigns) {
-            if (camp.getStatus().equalsIgnoreCase(status)) {
-                camps.add(camp.getName());
+
+        for (Map.Entry<Integer, Campaign> camp : campaigns.entrySet()) {
+            if(camp.getValue().getStatus().equalsIgnoreCase(status)) {
+                camps.add(camp.getValue().getName());
             }
         }
-        return camps;
-    }
 
-    private List<String> reduceToString(List<Campaign> campaigns) {
-        List<String> camps = new ArrayList<>();
-        for (Campaign camp : campaigns) {
-            camps.add(camp.getCampaignText());
-        }
         return camps;
     }
 
@@ -170,10 +161,10 @@ public class CampaignService extends DialogflowApp {
         Campaign campaign3 = new Campaign(3, "healthcare Test", "This is the test healthcare campaign", "active");
         Campaign campaign4 = new Campaign(4, "manufacturing Test", "This is the test manufacturing campaign", "inactive");
 
-        campaigns.add(campaign1);
-        campaigns.add(campaign2);
-        campaigns.add(campaign3);
-        campaigns.add(campaign4);
+        campaigns.put( campaign1.getId(), campaign1);
+        campaigns.put( campaign2.getId(), campaign2);
+        campaigns.put( campaign3.getId(), campaign3);
+        campaigns.put( campaign4.getId(), campaign4);
 
         return "Test Campaigns Added.";
     }
