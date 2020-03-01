@@ -89,9 +89,10 @@ public class CampaignService extends DialogflowApp {
         Map parameters = context.getParameters();
 
         String task = parameters.get("campaign_task").toString();
-        LOGGER.info("Campaign task is", task);
+        LOGGER.info("Campaign task is {}", task);
 
-        int campaignId = (int) request.getParameter("campaign_id");
+        double dCampaignId = (double) request.getParameter("campaign_id");
+        int campaignId = (int) dCampaignId;
 
         String response;
 
@@ -140,7 +141,7 @@ public class CampaignService extends DialogflowApp {
         List<String> camps = new ArrayList<>();
         for (Campaign camp : campaigns) {
             if (camp.getStatus().equalsIgnoreCase(status)) {
-                camps.add(camp.getCampaignText());
+                camps.add(camp.getName());
             }
         }
         return camps;
